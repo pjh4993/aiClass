@@ -22,23 +22,22 @@ int swap(string state,int loc, int dir){
     state.replace(m_loc, 1, "9");
     return stoi(state);
 }
-int puzzle_expand(int state, Search<int>* _this, int len, int dir){
+int puzzle_expand(int state, Graph<int>* _this, int len, int dir){
     string s_state = to_string(state);
     int loc = s_state.find("9"),m_state,j;
     for(j=0;j<4;j++){
         if(exp_dir[loc][j] == 0)
             break;
         m_state = swap(s_state,loc,exp_dir[loc][j]);
-        if(dir == 1){
-            _this->graph_stack.push(Node<int>(m_state,len));
-        }else{
-            _this->graph_queue.push(Node<int>(m_state,len));
-        }
+        _this->open->_push(Node<int>(m_state,len));
     }
     return j;
 };
 int main(void){
-    Search<int> search;
+    DfsStack<int> *dfs = new DfsStack<int>();
+    BfsQueue<int> *bfs = new BfsQueue<int>();
+    Graph<int> bfsGraph (bfs);
+    Graph<int> dfsGraph (dfs);
     result rc;
     int st, en, type;
     while(1){
@@ -47,19 +46,22 @@ int main(void){
             case 0:
                 return 0;
             case 1:
-                search.dfs_graph(st,en, puzzle_expand, &rc);
+                dfsGraph.search(st,en, puzzle_expand, &rc);
                 cout << "DFS - visited : " << rc.visit << " len : " <<rc.len << endl;
+                dfsGraph.init();
                 break;
             case 2:
-                search.bfs_graph(st,en, puzzle_expand, &rc);
+                bfsGraph.search(st,en, puzzle_expand, &rc);
                 cout << "BFS - visited : " << rc.visit << " len : " <<rc.len << endl;
+                bfsGraph.init();
                 break;
             case 3:
-                search.ids_graph(st,en, puzzle_expand, &rc);
+                /*
+                graph.ids_graph(st,en, puzzle_expand, &rc);
                 cout << "IDS - visited : " << rc.visit << " len : " <<rc.len << endl;
+                */
                 break;
         }
-        search.init();
     }
 }
 

@@ -3,6 +3,9 @@
 #include <stack>
 #include <queue>
 #include <unordered_set>
+#include <vector>
+#include <deque>
+#include <functional>
 using namespace std;
 typedef struct RESULT result;
 //result structure
@@ -20,53 +23,51 @@ class Node{
         Node(T v, int len);
 };
 
-//SEARCHFUNC structure
-template <typename T>
-struct searchFunc{
-    void (*_push)(Node<T> node);
-    Node<T> (*_top)();
-    int (*_empty)();
-    void (*_pop)();
-    void (*_clear)();
-};
 //template class CustomContainer<T,_open> declaration
-template <
-    typename T,
-    template <typename> class _open
-    >
+template <typename T>
 class CustomContainer{
     public:
-        _open<Node<T>> container;
-        void (*_push)(Node<T> node);
-        Node<T> (*_top)();
-        int (*_empty)();
-        void (*_pop)();
-        void (*_clear)();
-        CustomContainer(struct searchFunc<T> *sf){
-            _push = sf->_push;
-            _pop = sf->_pop;
-            _empty = sf->empty;
-            _top = sf->_top;
-            _clear = sf->_cle   _push = sf->_push;
-    
-            _pop = sf->_pop;
-            _empty = sf->empty;
-            _top = sf->_top;
-            _clear = sf->_clear;;
-        };
+        virtual void _push(Node<T> node) = 0;
+        virtual Node<T> _top() = 0;
+        virtual int _empty() = 0;
+        virtual void _pop() = 0;
+        virtual void _clear() = 0;
 };
+template <typename T>
+class DfsStack : public CustomContainer<T>{
+    stack<Node<T>> container;
+    virtual void _push(Node<T> node);
+    virtual Node<T> _top();
+    virtual int _empty();
+    virtual void _pop();
+    virtual void _clear();
+};
+template <typename T>
+class BfsQueue : public CustomContainer<T>{
+    queue<Node<T>> container;
+    virtual void _push(Node<T> node);
+    virtual Node<T> _top();
+    virtual int _empty();
+    virtual void _pop();
+    virtual void _clear();
+};
+
+
+
 //template class Graph<T,_open> declaration
 template <
-    typename T,
-    template <typename> class _open
+    typename T
     >
 class Graph{
     public:
-        CustomContainer<T,_open> open;
+        CustomContainer<T> *open;
         unordered_set<T> visited;
-        int search(T , T , int (*)(T ,Graph<T,_open>* ,int, int),result *);
+        int search(T , T , int (*)(T ,Graph<T>* ,int, int),result *);
+        int iter_search(T , T , int (*)(T ,Graph<T>* ,int, int),result *);
+        int search(T , T , int (*)(T ,Graph<T>* ,int, int),int,result *);
         void init();
-        Graph(struct searchFunc<T> *sf) : open(sf){
+        Graph(CustomContainer<T> *m_open){
+            open = m_open;
         };
 };
 #include "search.tpp"
