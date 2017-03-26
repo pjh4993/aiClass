@@ -33,6 +33,7 @@ int puzzle_expand(int state, Graph<int>* _this, int len, int dir){
     }
     return j;
 };
+
 int main(void){
     DfsStack<int> *dfs = new DfsStack<int>();
     BfsQueue<int> *bfs = new BfsQueue<int>();
@@ -46,20 +47,19 @@ int main(void){
             case 0:
                 return 0;
             case 1:
-                dfsGraph.search(st,en, puzzle_expand, &rc);
+                dfsGraph.search(Node<int> (st,0),Node<int> (en,0), puzzle_expand, &rc);
                 cout << "DFS - visited : " << rc.visit << " len : " <<rc.len << endl;
                 dfsGraph.init();
                 break;
             case 2:
-                bfsGraph.search(st,en, puzzle_expand, &rc);
+                bfsGraph.search(Node<int> (st,0),Node<int> (en,0), puzzle_expand, &rc);
                 cout << "BFS - visited : " << rc.visit << " len : " <<rc.len << endl;
                 bfsGraph.init();
                 break;
             case 3:
-                /*
-                graph.ids_graph(st,en, puzzle_expand, &rc);
+                dfsGraph.iter_search(Node<int>(st,0),Node<int>(en,0), puzzle_expand, &rc);
                 cout << "IDS - visited : " << rc.visit << " len : " <<rc.len << endl;
-                */
+                dfsGraph.init();
                 break;
         }
     }
