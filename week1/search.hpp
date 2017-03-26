@@ -26,7 +26,7 @@ class Node{
         Node();
         bool operator == (const Node<T> &other){
             return val == other.val;
-        }
+        };
 };
 template <typename T>
 bool operator == (const Node<T> &lhs, const Node<T> &rhs){
@@ -34,7 +34,31 @@ bool operator == (const Node<T> &lhs, const Node<T> &rhs){
 };
 template <typename T>
 bool operator <= (const Node<T> &lhs, const Node<T> &rhs){
-    return (lhs.len + lhs.hcost) <= (rhs.len + lhs.hcost);
+    return (lhs.len + lhs.hcost) <= (rhs.len + rhs.hcost);
+};
+template <typename T>
+bool operator < (const Node<T> &lhs, const Node<T> &rhs){
+    return (lhs.len + lhs.hcost) < (rhs.len + rhs.hcost);
+};
+template <typename T>
+bool operator >= (const Node<T> &lhs, const Node<T> &rhs){
+    return (lhs.len + lhs.hcost) >= (rhs.len + rhs.hcost);
+};
+template <typename T>
+bool operator > (const Node<T> &lhs, const Node<T> &rhs){
+    return (lhs.len + lhs.hcost) > (rhs.len + rhs.hcost);
+};
+
+template <typename T>
+struct node_greater{
+    bool operator()(const Node<T>&, const Node<T>&) const;
+    typedef Node<T> first_argument_type;
+    typedef Node<T> second_argument_type;
+    typedef bool result_type;
+};
+template <typename T>
+bool node_greater<T>::operator()(const Node<T>&lhs, const Node<T>&rhs) const {
+    return (lhs.len + lhs.hcost) > (rhs.len + rhs.hcost);
 };
 
 template<typename T>
@@ -114,7 +138,8 @@ class BfsQueue : public CustomContainer<T>{
 };
 template <typename T>
 class Astar : public CustomContainer<T>{
-    priority_queue<Node<T>> container;
+    priority_queue<Node<T>,vector<Node<T>>,node_greater<T> > container;
+
     virtual void _push(Node<T> node){
         container.push(node);
     };
@@ -128,7 +153,7 @@ class Astar : public CustomContainer<T>{
         container.pop();
     };
     virtual void _clear(){
-        priority_queue<Node<T>> empty_queue;
+        priority_queue<Node<T>,vector<Node<T>>,node_greater<T>> empty_queue;
         swap(container,empty_queue);
     };
     virtual int _size(){
@@ -151,10 +176,10 @@ class Graph{
     public:
         CustomContainer<T> *open;
         unordered_set<Node<T>,nodeHasher<T>> visited;
-        int search(Node<T> , Node<T> , int (*)(T ,Graph<T>* ,int, int),result *);
-        int search(Node<T> , Node<T> , int (*)(T ,Graph<T>* ,int, int),void (*)(Node<T> &node),result *);
-        int iter_search(Node<T> , Node<T> , int (*)(T ,Graph<T>* ,int, int),result *);
-        int search(Node<T> , Node<T>, int (*)(T ,Graph<T>* ,int, int),int,result *);
+        int search(Node<T> , Node<T> , int (*)(T ,Graph<T>* ,int),result *);
+        int search(Node<T> , Node<T> , int (*)(T ,Graph<T>* ,int (*)(T),int),int (*)(T),result *);
+        int iter_search(Node<T> , Node<T> , int (*)(T ,Graph<T>* ,int),result *);
+        int search(Node<T> , Node<T>, int (*)(T ,Graph<T>* ,int),int,int*,result *);
         void init();
         Graph(CustomContainer<T> *m_open){
             open = m_open;
